@@ -5,10 +5,12 @@
   <version>0.0.1-SNAPSHOT</version>
   
   <dependencies>
-    <dependency>
-	    <groupId>mysql</groupId>
-	    <artifactId>mysql-connector-java</artifactId>
-	    <version>8.0.29</version>
+    <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+	<dependency>
+	    <groupId>org.projectlombok</groupId>
+	    <artifactId>lombok</artifactId>
+	    <version>1.18.24</version>
+	    <scope>provided</scope>
 	</dependency>
     
     <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
