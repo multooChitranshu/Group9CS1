@@ -13,7 +13,7 @@ public class MetroClient {
 			System.out.println("-------Menu-------");
 			metroPresentation.showMenu();
 			System.out.println("Enter Choice ");
-			int choice=scanner.nextInt();
+			char choice=scanner.next().charAt(0);
 			metroPresentation.performMenu(choice);
 			System.out.println();
 					

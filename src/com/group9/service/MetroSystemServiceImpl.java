@@ -1,6 +1,9 @@
 package com.group9.service;
 
+import java.util.ArrayList;
+
 import com.group9.bean.MetroCard;
+import com.group9.bean.Transaction;
 import com.group9.persistence.MetroCardDAOImpl;
 
 public class MetroSystemServiceImpl implements MetroSystemService {
@@ -21,5 +24,37 @@ public class MetroSystemServiceImpl implements MetroSystemService {
 		return metroCardDAOImpl.getCardBalance(cardId);
 	
 	}
+
+	@Override
+	public boolean swipeIn(long cardId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean swipeOut(long cardId) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public double rechargeCard(long cardId,double amt) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public ArrayList<Transaction> transactionHistory(long cardId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Transaction lastTrasaction(long cardId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	
 
 }
