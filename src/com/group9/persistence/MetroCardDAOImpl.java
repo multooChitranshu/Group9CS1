@@ -33,8 +33,8 @@ public class MetroCardDAOImpl implements MetroCardDAO {
 	@Override
 	public MetroCard searchCard(long cardId) {
 		MetroCard card=null;
-		try (Connection connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/wileyc256", "root",
-				"sujata");
+		try (Connection connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/metrodatabase", "root",
+				"wiley");
 				PreparedStatement preparedStatement = connection
 						.prepareStatement("SELECT * FROM CARD where CARDID=?");) {
 
