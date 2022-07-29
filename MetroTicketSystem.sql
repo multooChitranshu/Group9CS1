@@ -2,35 +2,34 @@ CREATE DATABASE if not exists MetroDataBase;
 USE  MetroDataBase;
 
 CREATE TABLE if not exists Card (
-	cardId VARCHAR(15),
-    aadharId VARCHAR(15) UNIQUE,
+	cardId bigint,
+    aadharId bigint UNIQUE,
     balance double,
     PRIMARY KEY (cardId)
     );
  
 CREATE TABLE if not exists Station (
-	stationId VARCHAR(5),
-    stationName VARCHAR(15),
-    previousStationId VARCHAR(5),
-    nextStationId VARCHAR(5),
+	stationId int,
+    stationName VARCHAR(25),
+    previousStationId int,
+    nextStationId int,
     PRIMARY KEY (stationId)
 );
 CREATE TABLE if not exists Transaction (
 	dateAndTimeOfBoarding DATETIME,
     dateAndTimeOfExit DATETIME,
-    sourceStationId varchar(5),
-    destinationStationId varchar(5),
+    sourceStationId int,
+    destinationStationId int,
     fare double,
-    cardId VARCHAR(15),
+    cardId bigint,
     FOREIGN KEY (cardId) REFERENCES Card(cardId),
     FOREIGN KEY (sourceStationId) REFERENCES Station(stationId),
     FOREIGN KEY (destinationStationId) REFERENCES Station(stationId)
-    
-    
     );
     
-Insert into Station values('1','Bhopal',null,'2');
-Insert into Station values('2','MP Nagar','1','3');
-Insert into Station values('3','Indrapuri','2','4');
-Insert into Station values('4','New Market','3','5');
-Insert into Station values('5','Board Office','4',null);
+Insert into Station values(1,'Bhopal',null,2);
+Insert into Station values(2,'MP Nagar',1,3);
+Insert into Station values(3,'Indrapuri',2,4);
+Insert into Station values(4,'New Market',3,5);
+Insert into Station values(5,'Board Office',4,null);
+
