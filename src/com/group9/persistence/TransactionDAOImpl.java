@@ -21,7 +21,7 @@ public class TransactionDAOImpl implements TransactionDAO {
 	public boolean swipeIn(long cardId, int sourceStationId) {
 		if(metroStationDAOImpl.isValidStation(sourceStationId)) {
 			try(Connection conn=DriverManager.getConnection("jdbc:mysql://localhost:3306/MetroDataBase", "root", "wiley")){
-				PreparedStatement preparedStatement=conn.prepareStatement("INSERT INTO TRANSACTION VALUES(?,?,?,?,?,?)");
+				PreparedStatement preparedStatement=conn.prepareStatement("INSERT INTO TRANSACTION VALUES(?,?,?,?,?,?);");
 				
 				preparedStatement.setLong(1, cardId);
 				preparedStatement.setInt(2, sourceStationId);
@@ -37,19 +37,23 @@ public class TransactionDAOImpl implements TransactionDAO {
 
 	@Override
 	public boolean swipeOut(long cardId, int destinationStationId, double fare) {
-		// this is incorrect. Need to learn update query for this!
+		// the validating station part should go in service layer
 		if(metroStationDAOImpl.isValidStation(destinationStationId)) {
 			try(Connection conn=DriverManager.getConnection("jdbc:mysql://localhost:3306/MetroDataBase", "root", "wiley")){
-				PreparedStatement preparedStatement=conn.prepareStatement("INSERT INTO TRANSACTION VALUES(?,?,?,?,?,?)");
+				PreparedStatement preparedStatement=conn.prepareStatement("UPDATE TRANSACTION SET destinationStationId=?,dateAndTimeOfExit=?,fare=? WHERE cardId=(SELECT * FROM (SELECT cardId FROM TRANSACTION WHERE cardId=? AND destinationStationId=null) as X);");
+				preparedStatement.setInt(1, destinationStationId);
+				preparedStatement.setTimestamp(2, java.sql.Timestamp.valueOf(LocalDateTime.now()));
+				preparedStatement.setDouble(3, fare);
+				preparedStatement.setLong(4, destinationStationId);
+				int result=preparedStatement.executeUpdate();
+				if(result==1) {
+					return true;
+				}
 				
-				preparedStatement.setInt(4, destinationStationId);
-				preparedStatement.setTimestamp(5, java.sql.Timestamp.valueOf(LocalDateTime.now()));
-				preparedStatement.setDouble(6, fare);
 			} 
 			catch (SQLException e) {
 				e.printStackTrace();
 			}
-			return true;
 		}
 		return false;
 	}
@@ -64,7 +68,7 @@ public class TransactionDAOImpl implements TransactionDAO {
 			e.printStackTrace();
 		}
 		try(Connection conn=DriverManager.getConnection("jdbc:mysql://localhost:3306/MetroDataBase", "root", "wiley")){
-			PreparedStatement preparedStatement=conn.prepareStatement("SELECT * FROM TRANSACTION WHERE CARDID=? ORDER BY dateAndTimeOfBoarding DESC");
+			PreparedStatement preparedStatement=conn.prepareStatement("SELECT * FROM TRANSACTION WHERE CARDID=? ORDER BY dateAndTimeOfBoarding DESC;");
 			preparedStatement.setLong(1, cardId);
 			
 			ResultSet resultSet=preparedStatement.executeQuery();
@@ -99,7 +103,7 @@ public class TransactionDAOImpl implements TransactionDAO {
 		Transaction lastTransac=null;
 		try(Connection conn=DriverManager.getConnection("jdbc:mysql://localhost:3306/MetroDataBase", "root", "wiley")){
 			
-			PreparedStatement preparedStatement=conn.prepareStatement("SELECT * FROM TRANSACTION ORDER BY dateAndTimeOfBoarding DESC LIMIT 1");
+			PreparedStatement preparedStatement=conn.prepareStatement("SELECT * FROM TRANSACTION ORDER BY dateAndTimeOfBoarding DESC LIMIT 1;");
 			
 			ResultSet resultSet=preparedStatement.executeQuery();
 			

@@ -29,6 +29,14 @@ public class MetroCardDAOImpl implements MetroCardDAO {
 		}
 		return false;
 	}
+	
+	@Override
+	public boolean isValidCard(long cardId) {
+		if(searchCard(cardId)!=null)
+			return true;
+		return false;
+	}
+
 
 	@Override
 	public MetroCard searchCard(long cardId) {
@@ -62,5 +70,5 @@ public class MetroCardDAOImpl implements MetroCardDAO {
 		return newCard.getBalance();
 	}
 
-
+	
 }
