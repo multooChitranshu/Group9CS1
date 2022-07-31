@@ -16,12 +16,12 @@ CREATE TABLE if not exists Station (
     PRIMARY KEY (stationId)
 );
 CREATE TABLE if not exists Transaction (
-	dateAndTimeOfBoarding DATETIME,
-    dateAndTimeOfExit DATETIME,
-    sourceStationId int,
-    destinationStationId int,
-    fare double,
-    cardId bigint,
+	cardId bigint,
+	sourceStationId int default -1,
+	dateAndTimeOfBoarding DATETIME default null,
+	destinationStationId int default -1,
+    dateAndTimeOfExit DATETIME default null,
+    fare double default 0,
     FOREIGN KEY (cardId) REFERENCES Card(cardId),
     FOREIGN KEY (sourceStationId) REFERENCES Station(stationId),
     FOREIGN KEY (destinationStationId) REFERENCES Station(stationId)
