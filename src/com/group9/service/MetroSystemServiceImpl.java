@@ -47,14 +47,12 @@ public class MetroSystemServiceImpl implements MetroSystemService {
 
 	@Override
 	public List<Transaction> transactionHistory(long cardId) {
-		// TODO Auto-generated method stub
 		List<Transaction>transactionList=transactionDAOImpl.transactionHistory(cardId);
 		return transactionList;
 	}
 
 	@Override
 	public Transaction lastTrasaction(long cardId) {
-		// TODO Auto-generated method stub
 		Transaction lastTransaction=transactionDAOImpl.lastTransaction(cardId);
 		return lastTransaction;
 	}
