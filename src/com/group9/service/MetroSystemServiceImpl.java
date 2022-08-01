@@ -1,15 +1,17 @@
 package com.group9.service;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.group9.bean.MetroCard;
 import com.group9.bean.Transaction;
 import com.group9.persistence.MetroCardDAOImpl;
+import com.group9.persistence.TransactionDAOImpl;
 
 public class MetroSystemServiceImpl implements MetroSystemService {
 	
 	MetroCardDAOImpl metroCardDAOImpl = new MetroCardDAOImpl();
-
+	TransactionDAOImpl transactionDAOImpl =new TransactionDAOImpl();
 	@Override
 	public boolean addCard(MetroCard card) {
 		MetroCard metroCard = null;
@@ -44,15 +46,17 @@ public class MetroSystemServiceImpl implements MetroSystemService {
 	}
 
 	@Override
-	public ArrayList<Transaction> transactionHistory(long cardId) {
+	public List<Transaction> transactionHistory(long cardId) {
 		// TODO Auto-generated method stub
-		return null;
+		List<Transaction>transactionList=transactionDAOImpl.transactionHistory(cardId);
+		return transactionList;
 	}
 
 	@Override
 	public Transaction lastTrasaction(long cardId) {
 		// TODO Auto-generated method stub
-		return null;
+		Transaction lastTransaction=transactionDAOImpl.lastTransaction(cardId);
+		return lastTransaction;
 	}
 
 	
