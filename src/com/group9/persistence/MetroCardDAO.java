@@ -7,4 +7,5 @@ public interface MetroCardDAO {
 	MetroCard searchCard(long cardId);
 	boolean isValidCard(long cardId);
 	double getCardBalance(long cardId);
+	boolean rechargeCard(long cardId,double money);
 }
