@@ -80,18 +80,15 @@ public class MetroCardDAOImpl implements MetroCardDAO {
 			preparedStatement.setDouble(1, money);
 			preparedStatement.setLong(2, cardId);
 
-			ResultSet resultSet = preparedStatement.executeQuery();
-
-			if (resultSet.next()) {
-				long id = resultSet.getLong("cardId");
-				long aadhar = resultSet.getLong("aadharId");
-				double balance = resultSet.getDouble("balance");
+			int result = preparedStatement.executeUpdate();
+			if (result==1) {
+				return true;
 			}
 
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return true;
+		return false;
 	}
 
 	

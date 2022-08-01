@@ -63,13 +63,13 @@ public class MetroSystemPresentationImpl implements MetroSystemPresentation {
 				//calling transaction function
 				Transaction t=metroServiceImpl.lastTransaction(id);
 				//if entry closed (swipe-in)(val=1)
-				if( t==null || (t.getDestinationStationId()!=-1))
+				if( t==null || (t.getDateAndTimeOfExit()!=null))
 				{
 					System.out.println("1. Swipe-In");
 					val=1;
 				}
 				//if entry open (swipe-out)(val=2)
-				else if(t.getSourceStationId() !=-1 && t.getDestinationStationId()== -1)
+				else if(t.getDateAndTimeOfBoarding() !=null && t.getDateAndTimeOfExit()== null)
 				{
 					System.out.println("1. Swipe-Out");
 					val=2;
@@ -130,7 +130,7 @@ public class MetroSystemPresentationImpl implements MetroSystemPresentation {
 				System.out.println("Card does not exists please check the card number again");
 			}
 			break;
-		case 0:
+		case '0':
 			System.out.println("Thanks for using Metro System");
 			System.exit(0);
 		default:

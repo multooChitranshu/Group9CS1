@@ -44,7 +44,10 @@ public class MetroSystemServiceImpl implements MetroSystemService {
 		if(metroStationDAOImpl.isValidStation(destinationStationId)) {
 			int sourceStationId=lastTransaction(cardId).getSourceStationId();
 			double fare=checkFare(sourceStationId,destinationStationId);
-			return transactionDAOImpl.swipeOut(cardId, destinationStationId,fare);
+			if(transactionDAOImpl.swipeOut(cardId, destinationStationId,fare)) {
+				metroCardDAOImpl.rechargeCard(cardId, -fare);
+				return true;
+			}
 		}
 			return false;
 

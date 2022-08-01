@@ -17,9 +17,9 @@ CREATE TABLE if not exists Station (
 );
 CREATE TABLE if not exists Transaction (
 	cardId bigint,
-	sourceStationId int default -1,
+	sourceStationId int,
 	dateAndTimeOfBoarding DATETIME default null,
-	destinationStationId int default -1,
+	destinationStationId int,
     dateAndTimeOfExit DATETIME default null,
     fare double default 0,
     FOREIGN KEY (cardId) REFERENCES Card(cardId),
