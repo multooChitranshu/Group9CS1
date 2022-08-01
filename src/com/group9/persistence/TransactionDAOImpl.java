@@ -19,41 +19,40 @@ public class TransactionDAOImpl implements TransactionDAO {
 	
 	@Override
 	public boolean swipeIn(long cardId, int sourceStationId) {
-		if(metroStationDAOImpl.isValidStation(sourceStationId)) {
-			try(Connection conn=DriverManager.getConnection("jdbc:mysql://localhost:3306/MetroDataBase", "root", "wiley")){
-				PreparedStatement preparedStatement=conn.prepareStatement("INSERT INTO TRANSACTION VALUES(?,?,?);");
-				
-				preparedStatement.setLong(1, cardId);
-				preparedStatement.setInt(2, sourceStationId);
-				preparedStatement.setTimestamp(3, java.sql.Timestamp.valueOf(LocalDateTime.now()));
-			} 
-			catch (SQLException e) {
-				e.printStackTrace();
+		try(Connection conn=DriverManager.getConnection("jdbc:mysql://localhost:3306/MetroDataBase", "root", "wiley")){
+			PreparedStatement preparedStatement=conn.prepareStatement("INSERT INTO TRANSACTION(cardId,sourceStationId,dateAndTimeOfBoarding) VALUES(?,?,?);");
+			
+			preparedStatement.setLong(1, cardId);
+			preparedStatement.setInt(2, sourceStationId);
+			preparedStatement.setTimestamp(3, java.sql.Timestamp.valueOf(LocalDateTime.now()));
+			int rows = preparedStatement.executeUpdate();
+			if(rows==1) {
+				return true;
 			}
-			return true;
+		} 
+		catch (SQLException e) {
+			e.printStackTrace();
 		}
 		return false;
 	}
 
 	@Override
 	public boolean swipeOut(long cardId, int destinationStationId, double fare) {
-		// the validating station part should go in service layer
-		if(metroStationDAOImpl.isValidStation(destinationStationId)) {
-			try(Connection conn=DriverManager.getConnection("jdbc:mysql://localhost:3306/MetroDataBase", "root", "wiley")){
-				PreparedStatement preparedStatement=conn.prepareStatement("UPDATE TRANSACTION SET destinationStationId=?,dateAndTimeOfExit=?,fare=? WHERE cardId=(SELECT * FROM (SELECT cardId FROM TRANSACTION WHERE cardId=? AND destinationStationId=null) as X);");
-				preparedStatement.setInt(1, destinationStationId);
-				preparedStatement.setTimestamp(2, java.sql.Timestamp.valueOf(LocalDateTime.now()));
-				preparedStatement.setDouble(3, fare);
-				preparedStatement.setLong(4, destinationStationId);
-				int result=preparedStatement.executeUpdate();
-				if(result==1) {
-					return true;
-				}
-				
-			} 
-			catch (SQLException e) {
-				e.printStackTrace();
+		try(Connection conn=DriverManager.getConnection("jdbc:mysql://localhost:3306/MetroDataBase", "root", "wiley")){
+			PreparedStatement preparedStatement=conn.prepareStatement("UPDATE TRANSACTION "
+					+ "SET destinationStationId=?,dateAndTimeOfExit=?,fare=? "
+					+ "WHERE cardId=? AND dateAndTimeofExit is null;");
+			preparedStatement.setInt(1, destinationStationId);
+			preparedStatement.setTimestamp(2, java.sql.Timestamp.valueOf(LocalDateTime.now()));
+			preparedStatement.setDouble(3, fare);
+			preparedStatement.setLong(4, cardId);
+			int result=preparedStatement.executeUpdate();
+			if(result==1) {
+				return true;
 			}
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
 		}
 		return false;
 	}
@@ -76,13 +75,11 @@ public class TransactionDAOImpl implements TransactionDAO {
 			while(resultSet.next()) {
 				long cardID=resultSet.getLong(1);
 				int sourceStationId=resultSet.getInt(2);
-				LocalDateTime dateAndTimeOfBoarding=resultSet.getDate(3)
-						.toInstant().atZone(ZoneId.systemDefault())
-					      .toLocalDateTime();
+				LocalDateTime dateAndTimeOfBoarding=resultSet.getTimestamp(3).toLocalDateTime();
 				int destinationStationId=resultSet.getInt(4);
-				LocalDateTime dateAndTimeOfExit=resultSet.getDate(5)
-						.toInstant().atZone(ZoneId.systemDefault())
-					      .toLocalDateTime();
+				LocalDateTime dateAndTimeOfExit=null;
+				if(resultSet.getTimestamp(5)!=null)
+					dateAndTimeOfExit=resultSet.getTimestamp(5).toLocalDateTime();
 			    double fare=resultSet.getDouble(6);
 			    
 			    transactionList.add(new Transaction(cardID,sourceStationId,dateAndTimeOfBoarding,
@@ -103,20 +100,20 @@ public class TransactionDAOImpl implements TransactionDAO {
 		Transaction lastTransac=null;
 		try(Connection conn=DriverManager.getConnection("jdbc:mysql://localhost:3306/MetroDataBase", "root", "wiley")){
 			
-			PreparedStatement preparedStatement=conn.prepareStatement("SELECT * FROM TRANSACTION ORDER BY dateAndTimeOfBoarding DESC LIMIT 1;");
-			
+			PreparedStatement preparedStatement=conn.prepareStatement("SELECT * FROM TRANSACTION WHERE CARDID=? ORDER BY dateAndTimeOfBoarding DESC LIMIT 1;");
+			preparedStatement.setLong(1, cardId);
 			ResultSet resultSet=preparedStatement.executeQuery();
 			
 			if(resultSet.next()) {
 				long cardID=resultSet.getLong(1);
 				int sourceStationId=resultSet.getInt(2);
-				LocalDateTime dateAndTimeOfBoarding=resultSet.getDate(3)
-						.toInstant().atZone(ZoneId.systemDefault())
-					      .toLocalDateTime();
+				LocalDateTime dateAndTimeOfBoarding=resultSet.getTimestamp(3).toLocalDateTime();
+//				LocalDateTime dateAndTimeOfBoarding=resultSet.getDate(3).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 				int destinationStationId=resultSet.getInt(4);
-				LocalDateTime dateAndTimeOfExit=resultSet.getDate(5)
-						.toInstant().atZone(ZoneId.systemDefault())
-					      .toLocalDateTime();
+				LocalDateTime dateAndTimeOfExit=null;
+				if(resultSet.getTimestamp(5)!=null)
+					dateAndTimeOfExit=resultSet.getTimestamp(5).toLocalDateTime();
+//				LocalDateTime dateAndTimeOfExit=resultSet.getDate(5).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 			    double fare=resultSet.getDouble(6);
 			    
 			    lastTransac=new Transaction(cardID,sourceStationId,dateAndTimeOfBoarding,
