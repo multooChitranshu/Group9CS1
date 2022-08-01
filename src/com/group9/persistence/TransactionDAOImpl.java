@@ -21,7 +21,7 @@ public class TransactionDAOImpl implements TransactionDAO {
 	public boolean swipeIn(long cardId, int sourceStationId) {
 		if(metroStationDAOImpl.isValidStation(sourceStationId)) {
 			try(Connection conn=DriverManager.getConnection("jdbc:mysql://localhost:3306/MetroDataBase", "root", "wiley")){
-				PreparedStatement preparedStatement=conn.prepareStatement("INSERT INTO TRANSACTION VALUES(?,?,?,?,?,?);");
+				PreparedStatement preparedStatement=conn.prepareStatement("INSERT INTO TRANSACTION VALUES(?,?,?);");
 				
 				preparedStatement.setLong(1, cardId);
 				preparedStatement.setInt(2, sourceStationId);

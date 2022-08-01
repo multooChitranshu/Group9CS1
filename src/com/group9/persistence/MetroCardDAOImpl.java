@@ -70,5 +70,29 @@ public class MetroCardDAOImpl implements MetroCardDAO {
 		return newCard.getBalance();
 	}
 
+	@Override
+	public boolean rechargeCard(long cardId, double money) {
+		try (Connection connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/metrodatabase", "root",
+				"wiley");
+				PreparedStatement preparedStatement = connection
+						.prepareStatement("UPDATE CARD SET BALANCE=BALANCE+? where CARDID=?");) {
+
+			preparedStatement.setDouble(1, money);
+			preparedStatement.setLong(2, cardId);
+
+			ResultSet resultSet = preparedStatement.executeQuery();
+
+			if (resultSet.next()) {
+				long id = resultSet.getLong("cardId");
+				long aadhar = resultSet.getLong("aadharId");
+				double balance = resultSet.getDouble("balance");
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return true;
+	}
+
 	
 }
