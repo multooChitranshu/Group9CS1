@@ -86,6 +86,7 @@ public class TransactionDAOImpl implements TransactionDAO {
 			    		destinationStationId,dateAndTimeOfExit,fare));
 				
 			}
+			return transactionList;
 			
 		} catch (SQLException e) {
 			e.printStackTrace();

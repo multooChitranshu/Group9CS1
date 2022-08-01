@@ -1,5 +1,5 @@
 package com.group9.presentation;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 import com.group9.bean.MetroCard;
@@ -117,7 +117,8 @@ public class MetroSystemPresentationImpl implements MetroSystemPresentation {
 					break;
 				case 4:
 					//incomplete
-					metroServiceImpl.transactionHistory(id);
+					List<Transaction> history=metroServiceImpl.transactionHistory(id);
+					System.out.println(history);
 					break;
 				case 0:
 					System.out.println("Thanks for using Metro System");

@@ -1,6 +1,6 @@
 package com.group9.service;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import com.group9.bean.MetroCard;
 import com.group9.bean.Transaction;
@@ -60,9 +60,9 @@ public class MetroSystemServiceImpl implements MetroSystemService {
 	}
 
 	@Override
-	public ArrayList<Transaction> transactionHistory(long cardId) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Transaction> transactionHistory(long cardId) {
+		List<Transaction>transactionList=transactionDAOImpl.transactionHistory(cardId);
+		return transactionList;
 	}
 
 	@Override
