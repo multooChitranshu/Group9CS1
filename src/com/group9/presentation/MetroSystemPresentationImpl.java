@@ -34,6 +34,7 @@ public class MetroSystemPresentationImpl implements MetroSystemPresentation {
 				int internal_choice;
 				System.out.println("1. swipe-in");
 				System.out.println("2. check balance");
+				System.out.println("3. Recharge Card");
 				internal_choice=scanner.nextInt();
 				switch (internal_choice) {
 				case 1:
@@ -48,7 +49,20 @@ public class MetroSystemPresentationImpl implements MetroSystemPresentation {
 				case 2:
 					//check balance
 					System.out.println("Available balance : "+metroServiceImpl.cardBalance(aadhar));
-				}
+				
+				case 3:
+					System.out.println("Enter the amount : ");
+					double amt=scanner.nextDouble();
+					if(amt<0)
+						System.out.println("Enter valid amount please...");
+					else
+					metroServiceImpl.rechargeCard(aadhar,amt);
+					amt=metroServiceImpl.cardBalance(aadhar);
+					System.out.println("Available balance : "+amt);
+				break;
+				default:
+					System.out.println("Enter a valid option");
+			}
 			}
 			else {
 				System.out.println("Failed to add the card. Card already exists!");
@@ -123,7 +137,9 @@ public class MetroSystemPresentationImpl implements MetroSystemPresentation {
 				case 4:
 					//incomplete
 					List<Transaction> history=metroServiceImpl.transactionHistory(id);
-					System.out.println(history);
+					for(int i=0;i<history.size();i++) {
+						System.out.println(history.get(i));
+					}
 					break;
 				case 0:
 					System.out.println("Thanks for using Metro System");
