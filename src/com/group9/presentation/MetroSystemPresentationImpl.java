@@ -97,8 +97,10 @@ public class MetroSystemPresentationImpl implements MetroSystemPresentation {
 					case 2:
 						System.out.println("Enter destination station id : ");
 						int dsi=scanner.nextInt();
-						if(metroServiceImpl.swipeOut(id,dsi))
+						if(metroServiceImpl.swipeOut(id,dsi)) {
 							System.out.println("Swipe-Out successful");
+							System.out.println("Rs. "+metroServiceImpl.lastTransaction(id).getFare()+" was deducted. Thank you!");
+						}
 						else
 							System.out.println("Swipe-Out un-successful");
 						break;
