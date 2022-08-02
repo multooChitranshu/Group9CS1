@@ -113,6 +113,9 @@ public class MetroSystemPresentationImpl implements MetroSystemPresentation {
 				case 3:
 					System.out.println("Enter the amount : ");
 					double amt=scanner.nextDouble();
+					if(amt<0)
+						System.out.println("Enter valid amount please...");
+					else
 					metroServiceImpl.rechargeCard(id,amt);
 					amt=metroServiceImpl.cardBalance(id);
 					System.out.println("Available balance : "+amt);
