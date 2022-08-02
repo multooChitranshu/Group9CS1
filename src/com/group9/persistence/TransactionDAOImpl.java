@@ -60,12 +60,6 @@ public class TransactionDAOImpl implements TransactionDAO {
 	@Override
 	public List<Transaction> transactionHistory(long cardId) {
 		List<Transaction> transactionList=new ArrayList<>();
-		try {
-			Class.forName("java.sql.Driver.class");
-		}
-		catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
 		try(Connection conn=DriverManager.getConnection("jdbc:mysql://localhost:3306/MetroDataBase", "root", "wiley")){
 			PreparedStatement preparedStatement=conn.prepareStatement("SELECT * FROM TRANSACTION WHERE CARDID=? ORDER BY dateAndTimeOfBoarding DESC;");
 			preparedStatement.setLong(1, cardId);
@@ -86,13 +80,13 @@ public class TransactionDAOImpl implements TransactionDAO {
 			    		destinationStationId,dateAndTimeOfExit,fare));
 				
 			}
-			return transactionList;
+
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		
-		return null;
+		return transactionList;
 	}
 
 	@Override
@@ -120,13 +114,12 @@ public class TransactionDAOImpl implements TransactionDAO {
 			    lastTransac=new Transaction(cardID,sourceStationId,dateAndTimeOfBoarding,
 			    		destinationStationId,dateAndTimeOfExit,fare);
 			}
-			return lastTransac;
 				
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		
-		return null;
+		return lastTransac;
 	}
 
 }
