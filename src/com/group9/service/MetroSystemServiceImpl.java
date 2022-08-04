@@ -1,8 +1,11 @@
 package com.group9.service;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import com.group9.bean.MetroCard;
+import com.group9.bean.MetroStation;
 import com.group9.bean.Transaction;
 import com.group9.persistence.MetroCardDAOImpl;
 import com.group9.persistence.MetroStationDAOImpl;
@@ -14,6 +17,7 @@ public class MetroSystemServiceImpl implements MetroSystemService {
 	TransactionDAOImpl transactionDAOImpl=new TransactionDAOImpl();
 	MetroStationDAOImpl metroStationDAOImpl = new MetroStationDAOImpl();
 
+	
 	@Override
 	public boolean addCard(MetroCard card) {
 		MetroCard metroCard = null;
@@ -40,17 +44,37 @@ public class MetroSystemServiceImpl implements MetroSystemService {
 	}
 
 	@Override
-	public boolean swipeOut(long cardId,int destinationStationId) {
+	public String swipeOut(long cardId,int destinationStationId) {
+		String result="";
 		if(metroStationDAOImpl.isValidStation(destinationStationId)) {
 			int sourceStationId=lastTransaction(cardId).getSourceStationId();
-			double fare=checkFare(sourceStationId,destinationStationId);
-			if(transactionDAOImpl.swipeOut(cardId, destinationStationId,fare)) {
-				metroCardDAOImpl.rechargeCard(cardId, -fare);
-				return true;
+			double fare=0, fine=0;
+//			if source and destination are same, a fine of Rs. 30 is levied
+			if(sourceStationId==destinationStationId) {
+				fare=0;
+				fine=30;
 			}
+			else {
+				fare=calculateFare(sourceStationId,destinationStationId);
+			}
+			fine+=calculateFine(cardId, sourceStationId, destinationStationId);
+			double totalCharge=fare+fine;
+			if(cardBalance(cardId)>=totalCharge) {
+				if(transactionDAOImpl.swipeOut(cardId, destinationStationId,totalCharge)) {
+					metroCardDAOImpl.rechargeCard(cardId, -totalCharge);
+					result="Swipe-Out successful! Rs."+totalCharge+" was deducted.";
+					if(fine>0) {
+						result+="( includes Rs."+fine+" fine)";
+					}
+					return result;
+				}
+			}
+			result="Insufficient balance. Please recharge. Fare: Rs."+fare+", Fine levied: Rs."+fine+" Current balance: Rs"+cardBalance(cardId);
 		}
-			return false;
-
+		else {
+			result="Swipe-out unsuccessful! Invalid station ID";
+		}
+		return result;
 	}
 
 	@Override
@@ -76,9 +100,23 @@ public class MetroSystemServiceImpl implements MetroSystemService {
 	}
 
 	@Override
-	public double checkFare(int sourceStationId, int destinationStationId) {
-		double fare=Math.abs(destinationStationId-sourceStationId)*5;
-		return fare;
+	public double calculateFare(int sourceStationId, int destinationStationId) {
+		return Math.abs(destinationStationId-sourceStationId)*5;
+	}
+
+	@Override
+	public double calculateFine(long cardId, int sourceStationId, int destinationStationId) {
+		Transaction lastTransaction=transactionDAOImpl.lastTransaction(cardId);
+		int noOfStationsCovered=Math.abs(destinationStationId-sourceStationId);
+//		assuming time to travel from a station to the immediate next station is 30 mins.
+//		If more time taken, then charge Rs. 30 for every extra 30 mins
+		long countOf30mins=lastTransaction.getDateAndTimeOfBoarding().until(LocalDateTime.now(), ChronoUnit.MINUTES)/30;
+		return Math.max(0,(countOf30mins-noOfStationsCovered)*30);
+	}
+
+	@Override
+	public MetroStation getStation(int stationId) {
+		return metroStationDAOImpl.getStation(stationId);
 	}
 
 	

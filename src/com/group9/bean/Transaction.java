@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 
 public class Transaction {
+	private long transactionId;
 	private long cardId;
 	private int sourceStationId;
 	private LocalDateTime dateAndTimeOfBoarding;
