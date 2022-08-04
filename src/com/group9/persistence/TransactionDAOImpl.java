@@ -6,8 +6,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,15 +14,31 @@ import com.group9.bean.Transaction;
 public class TransactionDAOImpl implements TransactionDAO {
 
 	MetroStationDAO metroStationDAOImpl=new MetroStationDAOImpl();
+	private static long transactionCount=0;
+	
+	static {
+		try(Connection conn=DriverManager.getConnection("jdbc:mysql://localhost:3306/MetroDataBase", "root", "wiley");
+				PreparedStatement preparedStatement=conn.prepareStatement("SELECT transactionId FROM TRANSACTION ORDER BY transactionId DESC LIMIT 1");){
+			ResultSet resultSet=preparedStatement.executeQuery();
+			if(resultSet.next())
+				transactionCount=resultSet.getLong(1);
+		} 
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		
+	}
 	
 	@Override
 	public boolean swipeIn(long cardId, int sourceStationId) {
 		try(Connection conn=DriverManager.getConnection("jdbc:mysql://localhost:3306/MetroDataBase", "root", "wiley")){
-			PreparedStatement preparedStatement=conn.prepareStatement("INSERT INTO TRANSACTION(cardId,sourceStationId,dateAndTimeOfBoarding) VALUES(?,?,?);");
-			
-			preparedStatement.setLong(1, cardId);
-			preparedStatement.setInt(2, sourceStationId);
-			preparedStatement.setTimestamp(3, java.sql.Timestamp.valueOf(LocalDateTime.now()));
+			PreparedStatement preparedStatement=conn.prepareStatement("INSERT INTO TRANSACTION(transactionId,cardId,sourceStationId,dateAndTimeOfBoarding) VALUES(?,?,?,?);");
+			transactionCount++;
+			preparedStatement.setLong(1,transactionCount);
+			preparedStatement.setLong(2, cardId);
+			preparedStatement.setInt(3, sourceStationId);
+			preparedStatement.setTimestamp(4, java.sql.Timestamp.valueOf(LocalDateTime.now()));
 			int rows = preparedStatement.executeUpdate();
 			if(rows==1) {
 				return true;
@@ -47,7 +61,7 @@ public class TransactionDAOImpl implements TransactionDAO {
 			preparedStatement.setDouble(3, fare);
 			preparedStatement.setLong(4, cardId);
 			int result=preparedStatement.executeUpdate();
-			if(result==1) {
+			if(result>=1) {
 				return true;
 			}
 		}
@@ -67,16 +81,17 @@ public class TransactionDAOImpl implements TransactionDAO {
 			ResultSet resultSet=preparedStatement.executeQuery();
 			
 			while(resultSet.next()) {
-				long cardID=resultSet.getLong(1);
-				int sourceStationId=resultSet.getInt(2);
-				LocalDateTime dateAndTimeOfBoarding=resultSet.getTimestamp(3).toLocalDateTime();
-				int destinationStationId=resultSet.getInt(4);
+				long transactionId=resultSet.getLong(1);
+				long cardID=resultSet.getLong(2);
+				int sourceStationId=resultSet.getInt(3);
+				LocalDateTime dateAndTimeOfBoarding=resultSet.getTimestamp(4).toLocalDateTime();
+				int destinationStationId=resultSet.getInt(5);
 				LocalDateTime dateAndTimeOfExit=null;
-				if(resultSet.getTimestamp(5)!=null)
-					dateAndTimeOfExit=resultSet.getTimestamp(5).toLocalDateTime();
-			    double fare=resultSet.getDouble(6);
+				if(resultSet.getTimestamp(6)!=null)
+					dateAndTimeOfExit=resultSet.getTimestamp(6).toLocalDateTime();
+			    double fare=resultSet.getDouble(7);
 			    
-			    transactionList.add(new Transaction(cardID,sourceStationId,dateAndTimeOfBoarding,
+			    transactionList.add(new Transaction(transactionId,cardID,sourceStationId,dateAndTimeOfBoarding,
 			    		destinationStationId,dateAndTimeOfExit,fare));
 				
 			}
@@ -100,18 +115,19 @@ public class TransactionDAOImpl implements TransactionDAO {
 			ResultSet resultSet=preparedStatement.executeQuery();
 			
 			if(resultSet.next()) {
-				long cardID=resultSet.getLong(1);
-				int sourceStationId=resultSet.getInt(2);
-				LocalDateTime dateAndTimeOfBoarding=resultSet.getTimestamp(3).toLocalDateTime();
+				long transactionId=resultSet.getLong(1);
+				long cardID=resultSet.getLong(2);
+				int sourceStationId=resultSet.getInt(3);
+				LocalDateTime dateAndTimeOfBoarding=resultSet.getTimestamp(4).toLocalDateTime();
 //				LocalDateTime dateAndTimeOfBoarding=resultSet.getDate(3).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-				int destinationStationId=resultSet.getInt(4);
+				int destinationStationId=resultSet.getInt(5);
 				LocalDateTime dateAndTimeOfExit=null;
-				if(resultSet.getTimestamp(5)!=null)
-					dateAndTimeOfExit=resultSet.getTimestamp(5).toLocalDateTime();
+				if(resultSet.getTimestamp(6)!=null)
+					dateAndTimeOfExit=resultSet.getTimestamp(6).toLocalDateTime();
 //				LocalDateTime dateAndTimeOfExit=resultSet.getDate(5).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-			    double fare=resultSet.getDouble(6);
+			    double fare=resultSet.getDouble(7);
 			    
-			    lastTransac=new Transaction(cardID,sourceStationId,dateAndTimeOfBoarding,
+			    lastTransac=new Transaction(transactionId,cardID,sourceStationId,dateAndTimeOfBoarding,
 			    		destinationStationId,dateAndTimeOfExit,fare);
 			}
 				

@@ -1,3 +1,4 @@
+drop database metrodatabase;
 CREATE DATABASE if not exists MetroDataBase;
 USE  MetroDataBase;
 
@@ -16,6 +17,7 @@ CREATE TABLE if not exists Station (
     PRIMARY KEY (stationId)
 );
 CREATE TABLE if not exists Transaction (
+	transactionId bigint primary key,
 	cardId bigint,
 	sourceStationId int,
 	dateAndTimeOfBoarding DATETIME default null,
@@ -32,4 +34,3 @@ Insert into Station values(2,'MP Nagar',1,3);
 Insert into Station values(3,'Indrapuri',2,4);
 Insert into Station values(4,'New Market',3,5);
 Insert into Station values(5,'Board Office',4,null);
-
