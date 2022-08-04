@@ -88,6 +88,13 @@ public class MetroSystemPresentationImpl implements MetroSystemPresentation {
 					switch (val) {
 					case 1:
 						System.out.println("Enter source station id : ");
+						System.out.println();
+						System.out.println("1. Bhopal");
+						System.out.println("2. MP Nagar");
+						System.out.println("3. Indrapuri");
+						System.out.println("4. New Market");
+						System.out.println("5. Board Office");
+
 						int ssi=scanner.nextInt();
 						if(metroServiceImpl.swipeIn(id,ssi))
 							System.out.println("Swipe-In successful");
@@ -96,6 +103,12 @@ public class MetroSystemPresentationImpl implements MetroSystemPresentation {
 						break;
 					case 2:
 						System.out.println("Enter destination station id : ");
+						System.out.println();
+						System.out.println("1. Bhopal");
+						System.out.println("2. MP Nagar");
+						System.out.println("3. Indrapuri");
+						System.out.println("4. New Market");
+						System.out.println("5. Board Office");
 						int dsi=scanner.nextInt();
 						if(metroServiceImpl.swipeOut(id,dsi)) {
 							System.out.println("Swipe-Out successful");
